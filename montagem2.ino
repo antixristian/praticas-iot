@@ -1,45 +1,35 @@
-#include <TM1637Display.h>
+#include <DHT.h>
 
-const int trigPin = D6; 
-const int echoPin = D5; 
+// Definições para o sensor DHT22
+#define DHTPIN D4       // Pino digital conectado ao DHT22 (ex: D4 no NodeMCU)
+#define DHTTYPE DHT22   // Define o tipo do sensor (DHT22)
 
-const int CLK = D6;   
-const int DIO = D5;   
-
-TM1637Display display(CLK, DIO);
+// Inicializa o sensor DHT
+DHT dht(DHTPIN, DHTTYPE);
 
 void setup() {
-  Serial.begin(115200);
-
-  pinMode(trigPin, OUTPUT);
-  pinMode(echoPin, INPUT);
-
-  display.setBrightness(0x0f);
+  Serial.begin(115200); // Inicializa a comunicação serial
+  dht.begin();          // Inicializa o sensor DHT22
 }
 
 void loop() {
-  long duration;
-  float distance;
+  // Aguarda o sensor estabilizar
+  delay(2000);
 
-  digitalWrite(trigPin, LOW);
-  delayMicroseconds(2);
-  digitalWrite(trigPin, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(trigPin, LOW);
+  // Captura os valores de umidade e temperatura
+  float umidade = dht.readHumidity();       // Umidade em percentual (%)
+  float temperatura = dht.readTemperature(); // Temperatura em graus Celsius
 
-  duration = pulseIn(echoPin, HIGH);
-
-  distance = (duration * 0.034) / 2;
-
-  Serial.print("Distancia: ");
-  Serial.print(distance);
-  Serial.println(" cm");
-
-  int displayDistance = (int)distance;
-  if (displayDistance > 9999) {
-    displayDistance = 9999;  
+  // Verifica se houve falha na leitura
+  if (isnan(umidade) || isnan(temperatura)) {
+    Serial.println("Falha ao ler do sensor DHT22!");
+    return;
   }
-  display.showNumberDec(displayDistance);
 
-  delay(500);
+  // Exibe os valores na console serial
+  Serial.println("===== Leitura do DHT22 =====");
+  Serial.print("Umidade (%): ");
+  Serial.println(umidade);
+  Serial.print("Temperatura (C): ");
+  Serial.println(temperatura);
 }
