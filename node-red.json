@@ -150,31 +150,6 @@
         "hidden": false
     },
     {
-        "id": "1052212e1d0a94d9",
-        "type": "aedes broker",
-        "z": "d78da4550da9bf2a",
-        "name": "",
-        "mqtt_port": "1884",
-        "mqtt_ws_bind": "port",
-        "mqtt_ws_port": "",
-        "mqtt_ws_path": "",
-        "cert": "",
-        "key": "",
-        "certname": "",
-        "keyname": "",
-        "dburl": "",
-        "usetls": false,
-        "x": 90,
-        "y": 260,
-        "wires": [
-            []
-        ],
-        "outputLabels": [
-            "controle",
-            "sensor"
-        ]
-    },
-    {
         "id": "a4289f9023d8fa6e",
         "type": "mqtt out",
         "z": "d78da4550da9bf2a",
@@ -188,8 +163,8 @@
         "correl": "",
         "expiry": "",
         "broker": "mqtt_broker",
-        "x": 480,
-        "y": 260,
+        "x": 600,
+        "y": 280,
         "wires": []
     },
     {
@@ -205,7 +180,7 @@
         "height": 1,
         "passthru": false,
         "decouple": "false",
-        "topic": "",
+        "topic": "ar-condicionado/estado",
         "topicType": "str",
         "style": "",
         "onvalue": "ON",
@@ -218,8 +193,8 @@
         "offcolor": "",
         "animate": true,
         "className": "",
-        "x": 290,
-        "y": 260,
+        "x": 410,
+        "y": 280,
         "wires": [
             [
                 "a4289f9023d8fa6e"
@@ -240,8 +215,8 @@
         "correl": "",
         "expiry": "",
         "broker": "mqtt_broker",
-        "x": 540,
-        "y": 380,
+        "x": 660,
+        "y": 400,
         "wires": []
     },
     {
@@ -255,16 +230,16 @@
         "order": 5,
         "width": "6",
         "height": 1,
-        "passthru": true,
+        "passthru": false,
         "outs": "all",
         "topic": "ar-condicionado/temperatura",
         "topicType": "str",
         "min": "17",
-        "max": "25",
+        "max": "30",
         "step": "1",
         "className": "",
-        "x": 300,
-        "y": 380,
+        "x": 420,
+        "y": 400,
         "wires": [
             [
                 "4cfc9c7f047f8338",
@@ -284,8 +259,8 @@
         "nl": false,
         "rap": false,
         "inputs": 0,
-        "x": 270,
-        "y": 120,
+        "x": 390,
+        "y": 140,
         "wires": [
             [
                 "70e2d1f010ad5b60"
@@ -330,8 +305,8 @@
         "outputs": 1,
         "useDifferentColor": false,
         "className": "",
-        "x": 650,
-        "y": 120,
+        "x": 770,
+        "y": 140,
         "wires": [
             []
         ]
@@ -341,15 +316,15 @@
         "type": "function",
         "z": "d78da4550da9bf2a",
         "name": "Calcular Média",
-        "func": "let values = context.get('values') || [];\nlet total = context.get('total') || 0;\n\n// Adicionar novo valor\nlet newValue = parseFloat(msg.payload);\nvalues.push(newValue);\ntotal += newValue;\n\n// Manter apenas os últimos 7 valores\nif (values.length > 7) {\n    let removed = values.shift();\n    total -= removed;\n}\n\n// Calcular média\nlet average = total / values.length;\n\n// Atualizar contexto\ncontext.set('values', values);\ncontext.set('total', total);\n\n// Definir a média como a nova carga útil\nmsg.payload = average;\nreturn msg;",
+        "func": "let values = context.get('values') || [];\nlet total = context.get('total') || 0;\n\n// Adicionar novo valor\nlet newValue = parseFloat(msg.payload);\nvalues.push(newValue);\ntotal += newValue;\n\n// Manter apenas os últimos 7 valores\nif (values.length > 7) {\n    let removed = values.shift();\n    total -= removed;\n}\n\n// Calcular média\nlet average = total / values.length;\n\n// Atualizar contexto\ncontext.set('values', values);\ncontext.set('total', total);\n\n// Definir a média como a nova carga útil\nmsg.payload = average.toFixed(1);\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 460,
-        "y": 120,
+        "x": 580,
+        "y": 140,
         "wires": [
             [
                 "33de87635db35cf4"
@@ -368,8 +343,8 @@
         "nl": false,
         "rap": false,
         "inputs": 0,
-        "x": 220,
-        "y": 180,
+        "x": 340,
+        "y": 200,
         "wires": [
             [
                 "9683eb37c388712b"
@@ -400,8 +375,8 @@
         "seg2": "",
         "diff": false,
         "className": "",
-        "x": 660,
-        "y": 180,
+        "x": 780,
+        "y": 200,
         "wires": []
     },
     {
@@ -409,15 +384,15 @@
         "type": "function",
         "z": "d78da4550da9bf2a",
         "name": "Processar Umidade",
-        "func": "msg.payload = parseFloat(msg.payload).toFixed(2);\nreturn msg;",
+        "func": "msg.payload = parseFloat(msg.payload).toFixed(1);\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 450,
-        "y": 180,
+        "x": 570,
+        "y": 200,
         "wires": [
             [
                 "f7e3e5d04225741b"
@@ -441,8 +416,31 @@
         "font": "",
         "fontSize": "",
         "color": "#000000",
-        "x": 550,
-        "y": 440,
+        "x": 670,
+        "y": 460,
         "wires": []
+    },
+    {
+        "id": "4e063c3c91d51c80",
+        "type": "aedes broker",
+        "z": "d78da4550da9bf2a",
+        "name": "",
+        "mqtt_port": 1883,
+        "mqtt_ws_bind": "port",
+        "mqtt_ws_port": "",
+        "mqtt_ws_path": "",
+        "cert": "",
+        "key": "",
+        "certname": "",
+        "keyname": "",
+        "persistence_bind": "memory",
+        "dburl": "",
+        "usetls": false,
+        "x": 90,
+        "y": 260,
+        "wires": [
+            [],
+            []
+        ]
     }
 ]
